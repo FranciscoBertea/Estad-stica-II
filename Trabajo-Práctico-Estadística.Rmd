@@ -1,0 +1,283 @@
+---
+title: "TP_Estadistica"
+output: html_document
+date: "2024-10-13"
+---
+
+# Trabajo Práctico Estadística
+
+## Alumnos: 
+Bertea Anguinetti, Francisco José (45085317)
+Miotti, Camilo (45409165)
+Roncoroni, Juan Ignacio (44943486)
+Sposetti, Estrella Lucia (44974744)
+
+
+Luego de 10 meses asumido en el cargo de presidente Javier Milei, y tras realizar una encuesta a más de 900 personas en la Provincia de Córdoba, hemos decidido realizar un estudio acerca de la plataforma discursiva presentada por Milei en campaña electoral. En la misma, se pudo identificar tres ejes centrales de preocupación a partir de las cuales giraron sus propuestas: la inflación, el déficit fiscal y la corrupción. Si bien el discurso del ahora presidente ha tenido variantes a lo largo del tiempo, se tratan de tres dimensiones que englobaron claramente la impronta comunicacional de su campaña.
+En ese sentido, este estudio buscó profundizar la percepción de dichos problemas entre los votantes de Milei. A través de la encuesta realizada, se pudo acceder a datos muestrales que nos permitieron ahondar sobre la importancia de las dimensiones antes planteadas -entre otras-. 
+
+Primero subimos la Base de Datos
+```{r warnining=FALSE}
+
+library(readxl)
+datos = read.csv("E:/FCS-UNC/Liceniatura en Ciencia Política/6to Cuatrimestre/TeDeCi/Encuesta Estadística II 2024 (respuestas) - Respuestas de formulario 1 (1).csv")
+
+```
+
+Luego de ello hacemos un filtro sobre los votantes de Javier Milei en las elecciones generales
+```{r warnining=FALSE}
+
+library(tidyverse)
+voto_milei_g = filter(datos, datos$generales == "Javier Milei")
+nrow (voto_milei_g)
+
+```
+Sobre ese mismo filtro calculamos los intervalos de confianza de la proporción votantes que identificaron como prioridades urgentes que deben ser resueltas por el Gobierno Nacional a: 
+
+### 1. Inflación
+
+Primero calculamos objetos visuales (data frame), el primero hace referencia a los "fracasos", mientras que el segundo hace referencia a nuestra categoria "éxito", en este caso "Inflación"
+
+```{r warnining=FALSE}
+library(gmodels)
+
+df_interes <- voto_milei_g %>%
+  select(orden_corrupcion, orden_deficit, orden_inseguridad, orden_pobreza, orden_desempleo, orden_desigualdad, orden_educacion)
+
+df_interes_limpio <- df_interes[!is.na(df_interes) & df_interes != ""]
+
+frecuencias <- table(unlist(df_interes_limpio))
+
+frecuencias_orden <- data.frame(Var1 = names(frecuencias), Freq = as.vector(frecuencias))
+
+print (frecuencias_orden)
+
+df_interes_inflacion <- voto_milei_g %>%
+  select(orden_inflacion)
+
+df_interes_limpio_inflacion <- df_interes_inflacion[!is.na(df_interes_inflacion) & df_interes_inflacion != ""]
+
+frecuencias_inflacion <- table(unlist(df_interes_limpio_inflacion))
+
+frecuencias_orden_inflacion <- data.frame(Var1 = names(frecuencias_inflacion), Freq = as.vector(frecuencias_inflacion))
+
+print (frecuencias_orden_inflacion)
+
+```
+Luego calculamos la distribucion de frecuencias de cada data frame
+
+```{r warnining=FALSE}
+suma_orden_otros = sum(frecuencias_orden$Freq)
+
+suma_orden_inflacion = sum(frecuencias_orden_inflacion$Freq)
+
+suma_orden_todo = suma_orden_otros + suma_orden_inflacion
+
+```
+Calculamos la proporción de "éxitos" para poder hacer los cálculos correspondientes a los intervalos de confianza
+
+```{r warnining=FALSE}
+prop_inflacion = suma_orden_inflacion / (suma_orden_otros + suma_orden_inflacion)
+
+print(prop_inflacion)
+
+```
+
+Calculamos el *error de estimación*...
+
+```{r warnining=FALSE}
+error_estimacion <- 1.96 * sqrt((prop_inflacion * (1 - prop_inflacion)) / suma_orden_todo)
+
+print (error_estimacion)
+
+```
+
+Y por último establecemos los *límites del intervalo*
+
+```{r warnining=FALSE}
+limite_inf_inflacion = prop_inflacion-error_estimacion
+
+print(limite_inf_inflacion)
+
+limite_sup_inflacion = prop_inflacion+error_estimacion
+
+print(limite_sup_inflacion)
+
+```
+El intervalo de confianza calculado es: (0.20 ; 0.26)
+
+### 2. Corrupción
+
+Primero calculamos objetos visuales (data frame), el primero hace referencia a los "fracasos", mientras que el segundo hace referencia a nuestra categoria "éxito", en este caso "Corrupción"
+
+```{r warnining=FALSE}
+df_interes_no_corr <- voto_milei_g %>%
+  select(orden_inflacion, orden_deficit, orden_inseguridad, orden_pobreza, orden_desempleo, orden_desigualdad, orden_educacion)
+
+df_interes_limpio_no_corr <- df_interes_no_corr[!is.na(df_interes_no_corr) & df_interes_no_corr != ""]
+
+frecuencias_no_corr <- table(unlist(df_interes_limpio_no_corr))
+
+frecuencias_orden_no_corr <- data.frame(Var1 = names(frecuencias_no_corr), Freq = as.vector(frecuencias_no_corr))
+
+print (frecuencias_orden_no_corr)
+
+df_interes_corr <- voto_milei_g %>%
+  select(orden_corrupcion)
+
+df_interes_limpio_corr <- df_interes_corr[!is.na(df_interes_corr) & df_interes_corr != ""]
+
+frecuencias_corr <- table(unlist(df_interes_limpio_corr))
+
+frecuencias_orden_corr <- data.frame(Var1 = names(frecuencias_corr), Freq = as.vector(frecuencias_corr))
+
+print (frecuencias_orden_corr)
+
+```
+Luego calculamos la distribución de frecuencias de cada data frame
+
+```{r warnining=FALSE}
+
+suma_orden_no_corr = sum(frecuencias_orden_no_corr$Freq)
+
+suma_orden_corr = sum(frecuencias_orden_corr$Freq)
+
+```
+Calculamos la proporción de "éxitos" para poder hacer los cálculos correspondientes a los intervalos de confianza 
+
+```{r warnining=FALSE}
+prop_corr = suma_orden_corr / suma_orden_todo
+
+print (prop_corr)
+
+```
+
+Calculamos el *error de estimación*...
+
+```{r warnining=FALSE}
+error_estimacion_corr <- 1.96 * sqrt((prop_corr * (1 - prop_corr)) / suma_orden_todo)
+
+print (error_estimacion_corr)
+
+```
+
+Y por último establecemos los *límites del intervalo*
+
+```{r warnining=FALSE}
+limite_inf_corr = prop_corr-error_estimacion_corr
+
+print(limite_inf_corr)
+
+limite_sup_corr = prop_corr+error_estimacion_corr
+
+print(limite_sup_corr)
+
+```
+El intervalo de confianza calculado es: (0.07 ; 0.12)
+
+### 3. Déficit Fiscal
+
+Primero calculamos objetos visuales (data frame), el primero hace referencia a los "fracasos", mientras que el segundo hace referencia a nuestra categoria "éxito", en este caso "Deficit Fiscal"
+
+```{r warnining=FALSE}
+
+df_interes_no_df <- voto_milei_g %>%
+  select(orden_inflacion, orden_corrupcion, orden_inseguridad, orden_pobreza, orden_desempleo, orden_desigualdad, orden_educacion)
+
+df_interes_limpio_no_df <- df_interes_no_df[!is.na(df_interes_no_df) & df_interes_no_df != ""]
+
+frecuencias_no_df <- table(unlist(df_interes_limpio_no_df))
+
+frecuencias_orden_no_df <- data.frame(Var1 = names(frecuencias_no_df), Freq = as.vector(frecuencias_no_df))
+
+print(frecuencias_orden_no_df)
+
+df_interes_df <- voto_milei_g %>%
+  select(orden_deficit)
+
+df_interes_limpio_df <- df_interes_df[!is.na(df_interes_df) & df_interes_df != ""]
+
+frecuencias_df <- table(unlist(df_interes_limpio_df))
+
+frecuencias_orden_df <- data.frame(Var1 = names(frecuencias_df), Freq = as.vector(frecuencias_df))
+
+print(frecuencias_orden_df)
+
+```
+Luego calculamos la distribución de frecuencias de cada data frame
+
+```{r warnining=FALSE}
+
+suma_orden_no_df = sum(frecuencias_orden_no_df$Freq)
+
+suma_orden_df = sum(frecuencias_orden_df$Freq)
+
+```
+Calculamos la proporción de "éxitos" para poder hacer los cálculos correspondientes a los intervalos de confianza  
+
+```{r warnining=FALSE}
+
+prop_df = suma_orden_df / suma_orden_todo
+
+print (prop_df)
+
+```
+
+Calculamos el *error de estimación*...
+
+```{r warnining=FALSE}
+
+error_estimacion_df <- 1.96 * sqrt((prop_df * (1 - prop_df)) / suma_orden_todo)
+
+print(error_estimacion_df)
+
+```
+
+Y por último establecemos los *límites del intervalo*
+
+```{r warnining=FALSE}
+
+limite_inf_df = prop_corr-error_estimacion_df
+
+print(limite_inf_df)
+      
+limite_sup_df = prop_corr+error_estimacion_df
+
+print(limite_sup_df)
+
+```
+El intervalo de confianza calculado es: (0.08 ; 0.11)
+
+Conclusión: 
+Con un 95% de confianza podemos afirmar que los votantes de Milei consideran a la inflación como un problema que califican como prioritario dentro de aquellos que deben ser urgentemente atendidos por el gobierno. Dicha media poblacional se encuentra en el intervalo (0.20 ; 0.26), superando los valores obtenidos con respecto a las percepciones sobre corrupcion y deficit fiscal, los cuales son (0.07 ; 0.12) y (0.08 ; 0.11) respectivamente. 
+
+La manera de expresar los conflictos a resolver del discurso de Javier Milei no fue congruente con las consideraciones de sus votantes sobre los problemas principales del país interpretado a partir de los intervalos obtenidos. En los mismos, las variables inflación (1), corrupción (2) y déficit fiscal (3); no representan valores demasiado altos, aunque si homogéneos entre si, lo que expresa cierta estructura de pensamiento entre ellos. Sin embargo, la inflación representó valores mayores en comparación con las otras dos, llevándonos a afirmar que para dicho grupo es mas importante.
+
+Pese a ello, consideramos importante hacer un analisis más general de estas variables, observando como fueron puntuadas por los votantes de Javier Milei en terminos generales. 
+
+```{r warnining=FALSE}
+library(gmodels)
+
+#Inflación
+ci(voto_milei_g$problemas_inflacion)
+
+par(mar=c(5, 5, 4, 2)) 
+hist(voto_milei_g$problemas_inflacion, main = "Histograma del problema inflación en votantes de Milei", ylab =  "Frecuencia", xlab = "Puntaje", col = "lightblue")
+
+#Corrupción
+ci(voto_milei_g$problemas_corrupcion)
+
+par(mar=c(5, 5, 4, 2)) 
+hist(voto_milei_g$problemas_corrupcion, main = "Histograma del problema corrupción en votantes de Milei", ylab =  "Frecuencia", xlab = "Puntaje", col = "pink")
+
+#Deficit
+ci(voto_milei_g$problemas_deficit)
+
+par(mar=c(5, 5, 4, 2)) 
+hist(voto_milei_g$problemas_deficit, main = "Histograma del problema Deficit Fiscal en votantes de Milei", ylab =  "Frecuencia", xlab = "Puntaje", col = "lightyellow")
+
+```
+
+Como se observa, es posible estimar con un 95% de confianza que la media poblacional sobre aquellas personas que votaron en primera vuelta a Javier Milei comprenden a la inflación y a la corrupción -cuyos intervalos de confianza se superponene, como podemos observar: Inlfación (7.96 ; 8.52) y Corrupción (8.08 ; 8.63)- como  varibales más problematicas que el deficit fiscal, cuyo intervalo de confianza se encuentra por debajo de ellos dos y está comprendido entre (7.05 ; 7.64). 
+
+En este sentido, y para dar una conclusión final al análisis en cuestión, podemos decir que por más de que los votantes más "duros" de Javier Milei (quienes lo votaron en primera vuelta) consideren temas de mayor problematicidad la inflación y la corrupción, esto no se corresponde directamente con la relevancia que estas variables adquieren a la hora de ser tratados con "urgencia" por parte del Gobierno Nacional, siendo solo la inflación la variable más elegida por aquellos votantes, con sus intervalos de confianza ya elaborados en los apartados superiores. 
