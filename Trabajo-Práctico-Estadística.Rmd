@@ -249,11 +249,11 @@ print(limite_sup_df)
 El intervalo de confianza calculado es: (0.08 ; 0.11)
 
 Conclusión: 
-Con un 95% de confianza podemos afirmar que los votantes de Milei consideran a la inflación como un problema que califican como prioritario dentro de aquellos que deben ser urgentemente atendidos por el gobierno. Dicha media poblacional se encuentra en el intervalo (0.20 ; 0.26), superando los valores obtenidos con respecto a las percepciones sobre corrupcion y deficit fiscal, los cuales son (0.07 ; 0.12) y (0.08 ; 0.11) respectivamente. 
+Con un 95% de confianza podemos decir que los votantes de Javier Milei consideran a la inflación como un problema que califican como prioritario dentro de aquellos que deben ser urgentemente atendidos por el gobierno. Dicha proporción poblacional se encuentra en el intervalo (0.20 ; 0.26), superando los valores obtenidos con respecto a las percepciones sobre corrupcion y deficit fiscal, los cuales son (0.07 ; 0.12) y (0.08 ; 0.11) respectivamente.
+En términos de proporción poblacional, podría inferirse que es mayor la cantidad de personas que votaron a Javier Milei y consideran a la inflación como un problema a ser resuelto primordialmente, que la corrupción y el déficit fiscal. 
 
-La manera de expresar los conflictos a resolver del discurso de Javier Milei no fue congruente con las consideraciones de sus votantes sobre los problemas principales del país interpretado a partir de los intervalos obtenidos. En los mismos, las variables inflación (1), corrupción (2) y déficit fiscal (3); no representan valores demasiado altos, aunque si homogéneos entre si, lo que expresa cierta estructura de pensamiento entre ellos. Sin embargo, la inflación representó valores mayores en comparación con las otras dos, llevándonos a afirmar que para dicho grupo es mas importante.
-
-Pese a ello, consideramos importante hacer un analisis más general de estas variables, observando como fueron puntuadas por los votantes de Javier Milei en terminos generales. 
+Retomando la pregunta acerca de la construcción discursivo-ideológica sobre las urgencias del país hecha por Javier Milei, obtuvimos resultados interesantes. A pesar de haber una distribución dispersa entre las variables a elegir -siendo 8 en total y luego tuvieron que jerarquizarse en 3- la inflación fue la que primó entre las 3 que consideramos relevantes para nuestro análisis.
+Tal vez, una salvedad metodológica podría ser no proponer tantas categorías en un próximo estudio, ya que no es posible identificar cuestiones determinantes en base a ello. Sin embargo, es posible esbozar una hipótesis acerca del problema de la inflación como algo que preocupa a una gran cantidad de votantes de la Libertad Avanza en mayor medida que la corrupción y el déficit fiscal. Es preciso, entonces, observar el comportamiento de dichas variables en términos generales para poder incluir al total de dichos votantes:
 
 ```{r warnining=FALSE}
 library(gmodels)
